@@ -1,4 +1,4 @@
 # Ansible
 
 
-This is file used for Ansible
+Notes for Ansible tutorial
