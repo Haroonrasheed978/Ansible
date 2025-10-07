@@ -1,0 +1,7 @@
+---
+- name: Install Salt Minion on Windows Server
+  hosts: windows
+  gather_facts: no
+  roles:
+    - /home/haroon/Ansible/winsalt/
+

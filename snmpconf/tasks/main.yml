@@ -1,0 +1,44 @@
+---
+- name: Gather facts
+  setup:
+    filter: ansible_default_ipv4
+
+- name: Get server IP address
+  set_fact:
+    server_ip: "{{ ansible_default_ipv4.address }}"
+
+- name: Check SNMP walk with old key
+  command: snmpwalk -v3 -a SHA -A 4Nq7qbZ5pG75YgSF -x AES -X 4Nq7qbZ5pG75YgSF -l authPriv -u nttrmmon {{ server_ip }}
+  register: snmp_check
+  ignore_errors: yes
+
+- name: Debug SNMP check result
+  debug:
+    msg: "SNMP is not working with the old key"
+  when: snmp_check.rc != 0
+
+- name: Stop SNMP service
+  service:
+    name: snmpd
+    state: stopped
+  when: snmp_check.rc == 0
+
+- name: Create SNMP v3 user
+  command: net-snmp-create-v3-user -ro -A WX4uGHQkz35ELE2aL9NI -a SHA -X WX4uGHQkz35ELE2aL9NI -x AES nttrmmon
+  when: snmp_check.rc == 0
+
+- name: Start SNMP service
+  service:
+    name: snmpd
+    state: started
+  when: snmp_check.rc == 0
+
+- name: Check SNMP walk with new key
+  command: snmpwalk -v3 -a SHA -A WX4uGHQkz35ELE2aL9NI -x AES -X WX4uGHQkz35ELE2aL9NI -l authPriv -u nttrmmon {{ server_ip }}
+  register: snmp_v3_check
+  when: snmp_check.rc == 0
+
+- name: Debug SNMP v3 check result
+  debug:
+    msg: "SNMP v3 is working with the new key"
+  when: snmp_v3_check.rc == 0

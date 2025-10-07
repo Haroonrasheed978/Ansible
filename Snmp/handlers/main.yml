@@ -1,0 +1,5 @@
+---
+- name: restart salt-minion service
+  ansible.builtin.service:
+    name: "{{ package }}"
+    state: restarted

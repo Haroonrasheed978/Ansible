@@ -1,0 +1,15 @@
+---
+- name: Install SNMP
+  apt:
+    name: "{{ package }}"
+    state: present
+  tags: snmp
+
+- name: Stop snmp
+  systemd:
+    name: "{{ package }}"
+    state: stopped
+
+- name: Add snmp community string
+  shell: "net-snmp-create-v3-user -ro -A 4Nq7qbZ5pG75YgSF -a SHA -X 4Nq7qbZ5pG75YgSF -x AES nttrmmon"
+  notify: restart salt-minion service

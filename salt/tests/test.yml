@@ -1,0 +1,15 @@
+---
+- hosts: all
+  become: true
+  roles:
+   - /home/haroon/Ansible/salt
+
+  vars_prompt:
+  #salt_master: salt-master.example.com
+    - name: "salt_master_IP"
+      prompt: "Enter the salt_master_IP"
+      private: no
+
+    - name: "saltminion_version"
+      prompt: "Enter the Salt-minion Version: "
+      private: no

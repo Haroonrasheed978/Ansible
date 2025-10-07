@@ -1,0 +1,45 @@
+---
+- name: Create Directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download and add the Salt GPG key
+  shell: |
+    curl -fsSL -o /etc/apt/keyrings/salt-archive-keyring-2023.gpg https://repo.saltproject.io/salt/py3/ubuntu/20.04/amd64/SALT-PROJECT-GPG-PUBKEY-2023.gpg
+
+- name: Add the Salt repository
+  shell: |
+    echo "deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.gpg arch=amd64] https://repo.saltproject.io/salt/py3/ubuntu/20.04/amd64/latest focal main" | sudo tee /etc/apt/sources.list.d/salt.list
+  
+- name: Install Salt
+  apt:
+    name: salt-minion
+    state: present
+    update_cache: yes
+  tags: install_salt
+
+- name: creating files
+  file:
+    path: "{{ item }}"
+    state: touch
+  with_items:
+      - /etc/salt/minion.d/master.conf
+      - /etc/salt/minion.d/id.conf
+  ignore_errors: true
+  tags: files
+
+- name: Configure Salt Minion master IP
+  ansible.builtin.lineinfile:
+    path: /etc/salt/minion.d/master.conf
+    line: "master: salt master not installed"
+  tags: lines
+
+- name: Edit line in salt.conf
+  ansible.builtin.lineinfile:
+    path: /etc/salt/minion.d/master.conf
+    regexp: '^master'
+    line: 'This is edited line'
+  tags: edited
+

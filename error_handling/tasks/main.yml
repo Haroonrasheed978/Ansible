@@ -1,0 +1,6 @@
+---
+- name: check errors
+  apt:
+    name: docker.io
+    state: present
+  ignore_errors: yes

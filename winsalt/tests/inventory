@@ -1,0 +1,11 @@
+[windows]
+135.235.153.153
+
+[windows:vars]
+ansible_user=haroon
+ansible_password=Haroon@12345
+ansible_connection=winrm
+ansible_winrm_transport=basic
+ansible_port=5985
+ansible_winrm_server_cert_validation=ignore
+

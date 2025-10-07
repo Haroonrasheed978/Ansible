@@ -1,0 +1,17 @@
+---
+- name: Ensure C:\temp directory exists
+  win_file:
+    path: C:\temp
+    state: directory
+
+- name: Download Salt Minion installer
+  win_get_url:
+    url: https://packages.broadcom.com/artifactory/saltproject-generic/windows/3006.9/Salt-Minion-3006.9-Py3-AMD64-Setup.exe
+    dest: C:\temp\Salt-Minion-3006.9-Py3-AMD64-Setup.exe
+
+- name: Install Salt Minion
+  win_package:
+    path: C:\temp\Salt-Minion-3006.9-Py3-AMD64-Setup.exe
+    arguments: /S /master=10.239.110.145 /minion-name={{ ansible_hostname }}
+    product_id: Salt Minion
+    state: present

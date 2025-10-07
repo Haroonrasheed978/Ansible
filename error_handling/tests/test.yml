@@ -1,0 +1,4 @@
+---
+- hosts: all
+  roles:
+    - /home/haroon/Ansible/error_handling/

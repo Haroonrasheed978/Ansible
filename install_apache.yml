@@ -9,11 +9,13 @@
       update_cache: yes
     when: ansible_distribution in ["Ubuntu", "Debian"]
 
-  - name: install apache2 package
+  - name: uninstall apache2 package
     apt:
-      name: apache2   
-    when: ansible_distribution == "Ubuntu"
-
+      name: apache2
+      state: absent   
+    tags: 
+      - Ubuntu
+ 
   - name: add php for apache
     apt:
       name: libapache2-mod-php

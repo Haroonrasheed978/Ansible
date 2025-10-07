@@ -1,0 +1,51 @@
+---
+- name: Install and configure Salt Minion using Salt Bootstrap
+  hosts: test
+  become: true
+  vars_prompt:
+  #salt_master: salt-master.example.com
+    - name: "salt_master_IP"
+      prompt: "Enter the salt_master_IP"
+      private: no
+
+    - name: "saltminion_version"
+      prompt: "Enter the Salt-minion Version: "
+      private: no
+  tasks:
+    - name: Download Salt Bootstrap script
+      get_url:
+        url: https://bootstrap.saltproject.io
+        dest: /tmp/bootstrap_salt.sh
+        mode: 0755
+
+    - name: Run Salt Bootstrap script
+      shell: "/tmp/bootstrap_salt.sh -P stable {{ saltminion_version }}"
+      become: true
+
+    - name: Create a file
+      file: 
+         path: "{{ item }}"
+         state: touch
+      with_items:
+         - /etc/salt/minion.d/master.conf
+         - /etc/salt/minion.d/id.conf
+      ignore_errors: true
+
+    - name: Configure Salt Minion master IP
+      ansible.builtin.lineinfile:
+        path: /etc/salt/minion.d/master.conf
+        line: "master: {{ salt_master_IP }}"
+
+    - name: Configure Salt Minion ID
+      ansible.builtin.lineinfile:
+        path: /etc/salt/minion.d/id.conf
+        line: "id: {{ ansible_hostname }}"
+    
+    - name: restart salt-minion service
+      ansible.builtin.service:
+        name: salt-minion
+        state: restarted
+      
+
+    
+    
